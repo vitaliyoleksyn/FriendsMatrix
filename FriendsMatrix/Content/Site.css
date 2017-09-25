@@ -1,0 +1,39 @@
+﻿html {
+    background-color: lightgrey;
+}
+
+body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    background-color: lightgrey;
+}
+
+.frend-icon:hover {
+    border: solid 1px white;
+}
+
+.main-content {
+    margin: 200px;
+}
+
+.cs-card-content {
+    overflow: hidden;
+}
+
+.cs-card-title {
+    flex: none;
+}
+
+/*use this hack to speed up this example implementation*/
+.md-toast-animating {
+    overflow: auto !important;
+}
+
+.md-toast-done .md-toast-content{
+    background: #004f75 !important;
+}
+
+.md-toast-error .md-toast-content{
+    background: rgb(193, 30, 23) !important;
+}
+/*small hack*/

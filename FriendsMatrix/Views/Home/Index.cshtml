@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Home";
+}
+
+<div class="main-content" ng-controller="mainCtrl">
+
+    <div layout="row" layout-xs="column" layout-sm="column" layout-md="column" layout-lg="column">
+
+        <md-card flex>
+            <md-card-title class="cs-card-title">
+                <md-card-title-text>
+                    <span class="md-headline">Add User</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-content>
+
+                    <div layout="row">
+                        <md-input-container class="md-block" flex-gt-sm flex="80">
+                            <label for="fName">First name</label>
+                            <input id="fName" ng-model="user.firstName">
+                        </md-input-container>
+                    </div>
+
+                </md-content>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-disabled="!user.firstName" ng-click="addUser()">
+                    <md-icon>person_add</md-icon> Add User
+                </md-button>
+            </md-card-actions>
+        </md-card>
+
+        <md-card flex>
+            <md-card-title class="cs-card-title">
+                <md-card-title-text>
+                    <span class="md-headline">Add/Remove Relation</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-content class="cs-card-content">
+
+                    <div layout="row">
+                        <md-switch ng-change="changeRelationEditMode()" ng-model="mode" flex>
+                            {{ mode ? 'Add' : "Remove" }}
+                        </md-switch>
+                    </div>
+                    <div layout="row">
+                        <md-input-container flex>
+                            <label>Users</label>
+                            <md-select ng-change="changeUser(uIndex)" ng-model="uIndex">
+                                <md-option ng-repeat="u in users track by $index" value="{{$index}}">
+                                    {{u.Name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+
+                        <md-icon flex="10">compare_arrows</md-icon>
+
+                        <md-input-container ng-show="!mode" flex>
+                            <label>{{ mode ? 'Users' : "Friends" }}</label>
+                            <md-select ng-change="changeFriendToRemove(ufIndex)" ng-model="ufIndex">
+                                <md-option ng-repeat="uf in user.friends track by $index" value="{{$index}}">
+                                    {{uf.Name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+
+                        <md-input-container ng-show="mode" flex>
+                            <label>{{ mode ? 'Users' : "Friends" }}</label>
+                            <md-select ng-change="changeUserForAdd(ufaIndex)" ng-model="ufaIndex">
+                                <md-option ng-repeat="ufa in usersForAdd track by $index" value="{{$index}}">
+                                    {{ufa.Name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                    </div>
+
+                </md-content>
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center">
+                <md-button ng-disabled="!mode" ng-click="addRelation()">
+                    <md-icon>add_circle</md-icon> Add
+                </md-button>
+                <md-button ng-disabled="mode" ng-click="removeRelation()">
+                    <md-icon>remove_circle</md-icon> Remove
+                </md-button>
+            </md-card-actions>
+        </md-card>
+
+        <md-card flex>
+            <md-card-title class="cs-card-title">
+                <md-card-title-text>
+                    <span class="md-headline">Friends by Level</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+                <md-content class="cs-card-content">
+
+                    <div layout="row">
+                        <md-input-container flex>
+                            <label>Users</label>
+                            <md-select ng-change="changeUserForLevels(cuflIndex)" ng-model="cuflIndex">
+                                <md-option ng-repeat="cufl in users track by $index" value="{{$index}}">
+                                    {{cufl.Name}}
+                                </md-option>
+                            </md-select>
+                        </md-input-container>
+                        <md-input-container class="md-block" flex-gt-sm flex="30">
+                            <label for="inpLevel">Level of nesting</label>
+                            <input id="inpLevel" ng-model="levelOfNesting">
+                        </md-input-container>
+                    </div>
+                    
+                </md-content>
+            </md-card-content>
+
+            <md-card-actions layout="row" layout-align="end center">
+                <md-progress-circular ng-disabled="!queryInProgress" md-diameter="30"></md-progress-circular>
+                <md-button ng-disabled="!levelUserId || !levelOfNesting" ng-click="getUserNestingFriens()">
+                    <md-icon>widgets</md-icon> Get Users
+                </md-button>
+            </md-card-actions>
+        </md-card>
+
+    </div>
+
+    <div ng-if="nestingFriensByLevel.length > 0" ng-repeat="ul in usersByLevels track by $index" layout="row" layout-xs="column" layout-sm="column" layout-md="column" layout-lg="column">
+
+        <md-card flex>
+            <md-card-title class="cs-card-title">
+                <md-card-title-text>
+                    <span class="md-headline">Found frends on Level {{ul.level}}</span>
+                </md-card-title-text>
+            </md-card-title>
+            <md-card-content>
+
+                <md-content layout-padding>
+                    <md-grid-list md-cols-gt-md="12" md-cols="3" md-cols-md="8"
+                                  md-row-height-gt-md="1:1" md-row-height="4:3"
+                                  md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
+                        <md-grid-tile class="frend-icon" ng-repeat="user in ul.users track by $index"
+                                      ng-style="{'background': colorTiles[$index].color}"
+                                      md-colspan-gt-sm="{{colorTiles[$index].colspan}}"
+                                      md-rowspan-gt-sm="{{colorTiles[$index].rowspan}}">
+                            {{user.Name}}
+                        </md-grid-tile>
+                    </md-grid-list>
+                </md-content>
+
+            </md-card-content>
+            <md-card-actions layout="row" layout-align="end center">
+            </md-card-actions>
+        </md-card>
+
+    </div>
+
+</div>
