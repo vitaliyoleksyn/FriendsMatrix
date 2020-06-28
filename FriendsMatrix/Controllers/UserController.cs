@@ -7,26 +7,35 @@ using System.Threading.Tasks;
 
 namespace FriendsMatrix.Controllers
 {
-	// I didn't create business and db layer
-	// and didn't use dependency injection
-	//Just push all logic into controller to speed up with this task.
-	//That's why I have doubt whether it was well done
-	
-	
+    // I didn't create business and db layer
+    // and didn't use dependency injection
+    //Just push all logic into controller to speed up with this task.
+    //That's why I have doubt whether it was well done
+
+
     public class UserController : ApiController
     {
-        //GET: api/User
-        public IEnumerable<UserDTO> Get()
+        [HttpGet]
+        [Route("api/User/test")]
+        public string Test()
         {
-            using (DbEntities context = new DbEntities())
-            {
-                IQueryable<UserDTO> userQuery = context.Users.Select(u => new UserDTO()
-                {
-                    Id = u.Id,
-                    Name = u.Name
-                });
-                return userQuery.ToList();
-            }
+            return "Hi world";
+        }
+
+        //GET: api/User
+        public string Get()
+        {
+            "test call".LogThis();
+            return "Ok";
+            //using (DbEntities context = new DbEntities())
+            //{
+            //    IQueryable<UserDTO> userQuery = context.Users.Select(u => new UserDTO()
+            //    {
+            //        Id = u.Id,
+            //        Name = u.Name
+            //    });
+            //    return userQuery.ToList();
+            //}
         }
 
         // GET: api/User/5
@@ -53,10 +62,10 @@ namespace FriendsMatrix.Controllers
         {
             using (DbEntities context = new DbEntities())
             {
-				//This may take some time because of 
-				//sql procedure was written recursively (SqlScripts/CreateAndInitDataBase.sql)
-				//This is not good, but to accelerate the task
-				return await Task.Run(() =>
+                //This may take some time because of 
+                //sql procedure was written recursively (SqlScripts/CreateAndInitDataBase.sql)
+                //This is not good, but to accelerate the task
+                return await Task.Run(() =>
                 {
                     return context.GetFriendsLevels(level, id).Select(i => new UserDTO() { Id = i.Id, Level = i.Level, Name = i.Name }).ToList();
                 });
@@ -67,15 +76,18 @@ namespace FriendsMatrix.Controllers
         public void Post([FromBody]User user)
         {
             bool isValid = user != null && (user.Name != null || user.Name != string.Empty);
+            System.Web.HttpContext.Current.Request.InputStream.Position = 0;
+            var requestParams = new System.IO.StreamReader(System.Web.HttpContext.Current.Request.InputStream).ReadToEnd();
+            System.Diagnostics.Debug.WriteLine(requestParams);
 
-            if (isValid)
-            {
-                using (DbEntities context = new DbEntities())
-                {
-                    context.Users.Add(user);
-                    context.SaveChanges();
-                }
-            }
+            //if (isValid)
+            //{
+            //    using (DbEntities context = new DbEntities())
+            //    {
+            //        context.Users.Add(user);
+            //        context.SaveChanges();
+            //    }
+            //}
         }
     }
 }
